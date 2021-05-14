@@ -12,6 +12,7 @@
         <module>KafkaProducer</module>
         <module>KafkaMsg</module>
         <module>KafkaConsumer</module>
+        <module>BookCatalogService</module>
     </modules>
 
     <properties>

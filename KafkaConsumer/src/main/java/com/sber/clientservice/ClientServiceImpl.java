@@ -3,9 +3,11 @@ package com.sber.clientservice;
 import com.sber.kafkamsg.MessageDTO;
 import org.json.JSONException;
 import io.restassured.response.Response;
+import org.springframework.stereotype.Service;
 
 import static io.restassured.RestAssured.given;
 
+@Service
 public class ClientServiceImpl implements ClientService {
     @Override
     public void getRequest(MessageDTO msgDTO) throws JSONException {
@@ -26,7 +28,7 @@ public class ClientServiceImpl implements ClientService {
                 and().
                 body(msgDTO.getBody()).
                 when().
-                post(msgDTO.getUrl()).
+                post(msgDTO.getUrl() + msgDTO.getParameters()).
                 then().
                 extract().
                 response();
