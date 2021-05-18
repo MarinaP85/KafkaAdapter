@@ -31,4 +31,13 @@ public class BookDto {
     public void setPrice(double price) {
         this.price = price;
     }
+
+    @Override
+    public String toString() {
+        return "Book{" +
+                "bookId=" + bookId + '\n' +
+                ", title='" + title + '\n' +
+                ", price=" + price +
+                '}' + '\n';
+    }
 }

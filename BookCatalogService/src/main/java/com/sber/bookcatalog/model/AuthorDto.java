@@ -33,4 +33,13 @@ public class AuthorDto {
     public void setBookList(List<BookDto> bookList) {
         this.bookList = bookList;
     }
+
+    @Override
+    public String toString() {
+        return "Author{" +
+                "id=" + id + '\n' +
+                ", author='" + author + '\n' +
+                ", bookList=" + bookList.toString() +
+                '}';
+    }
 }

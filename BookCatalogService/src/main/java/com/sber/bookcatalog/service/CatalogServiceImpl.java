@@ -3,35 +3,34 @@ package com.sber.bookcatalog.service;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ArrayNode;
-import com.fasterxml.jackson.databind.node.ObjectNode;
+import com.jayway.jsonpath.InvalidPathException;
 import com.jayway.jsonpath.JsonPath;
+import com.sber.bookcatalog.configuration.BookServiceProperties;
 import com.sber.bookcatalog.model.AuthorDto;
 import com.sber.bookcatalog.model.BookDto;
-import org.springframework.beans.factory.annotation.Value;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Paths;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 @Service
 public class CatalogServiceImpl implements CatalogService {
 
-    // Хранилище авторов
-    private static final Map<Integer, AuthorDto> AUTHOR_REPOSITORY_MAP = new HashMap<>();
+    private final String bookCatalogDir;
 
-    @Value("${book-catalog.directory}")
-    private String bookCatalogDir;
+    @Autowired
+    public CatalogServiceImpl(BookServiceProperties properties) {
+        this.bookCatalogDir = properties.getDirectory();
+    }
 
     @Override
     public boolean createAuthor(AuthorDto author) {
         ObjectMapper mapper = new ObjectMapper();
         try {
-            //String jsonString = mapper.writeValueAsString(author);
             boolean flagFind = false;
             File file = new File(bookCatalogDir + "\\BookCatalog.json");
             JsonNode rootNode = mapper.readTree(file);
@@ -41,7 +40,7 @@ public class CatalogServiceImpl implements CatalogService {
                 for (int i = 0; i < catalog.size(); i++) {
                     bookElement = catalog.get(i);
                     if (bookElement.hasNonNull("id")) {
-                        if (bookElement.get("id").textValue().equalsIgnoreCase(Integer.toString(author.getId()))) {
+                        if (bookElement.get("id").numberValue().equals(author.getId())) {
                             flagFind = true;
                             break;
                         }
@@ -50,7 +49,6 @@ public class CatalogServiceImpl implements CatalogService {
             }
             if (!flagFind) {
                 ((ArrayNode) catalog).addPOJO(author);
-                ((ObjectNode) rootNode).putArray("catalog").add(catalog);
                 mapper.writeValue(file, rootNode);
                 return true;
             } else {
@@ -64,28 +62,18 @@ public class CatalogServiceImpl implements CatalogService {
 
     @Override
     public List<String> readAllAuthors() {
-        String json = "";
+        String json;
         try {
             json = new String(Files.readAllBytes(Paths.get(bookCatalogDir + "\\BookCatalog.json")));
             return JsonPath.read(json, "$.catalog[*].author");
-        } catch (IOException e) {
+        } catch (IOException | InvalidPathException e) {
+            e.printStackTrace();
             return null;
         }
     }
 
     @Override
     public AuthorDto readAuthorById(int id) {
-        String json = "";
-        try {
-            json = new String(Files.readAllBytes(Paths.get(bookCatalogDir + "\\BookCatalog.json")));
-            return JsonPath.parse(json).read("$.catalog[?(@.id == " + id + ")]", AuthorDto.class);
-        } catch (IOException e) {
-            return null;
-        }
-    }
-
-    @Override
-    public boolean updateAuthor(AuthorDto author, int id) {
         ObjectMapper mapper = new ObjectMapper();
         try {
             File file = new File(bookCatalogDir + "\\BookCatalog.json");
@@ -96,10 +84,34 @@ public class CatalogServiceImpl implements CatalogService {
                 for (int i = 0; i < catalog.size(); i++) {
                     bookElement = catalog.get(i);
                     if (bookElement.hasNonNull("id")) {
-                        if (bookElement.get("id").textValue().equalsIgnoreCase(Integer.toString(id))) {
+                        if (bookElement.get("id").numberValue().equals(id)) {
+                            return mapper.convertValue(bookElement, AuthorDto.class);
+                        }
+                    }
+                }
+            }
+            return null;
+        } catch (IOException e) {
+            e.printStackTrace();
+            return null;
+        }
+    }
+
+    @Override
+    public boolean updateAuthor(AuthorDto author) {
+        ObjectMapper mapper = new ObjectMapper();
+        try {
+            File file = new File(bookCatalogDir + "\\BookCatalog.json");
+            JsonNode rootNode = mapper.readTree(file);
+            JsonNode catalog = rootNode.get("catalog");
+            JsonNode bookElement;
+            if (catalog.isArray()) {
+                for (int i = 0; i < catalog.size(); i++) {
+                    bookElement = catalog.get(i);
+                    if (bookElement.hasNonNull("id")) {
+                        if (bookElement.get("id").numberValue().equals(author.getId())) {
                             ((ArrayNode) catalog).remove(i);
                             ((ArrayNode) catalog).addPOJO(author);
-                            ((ObjectNode) rootNode).putArray("catalog").add(catalog);
                             mapper.writeValue(file, rootNode);
                             return true;
                         }
@@ -125,9 +137,8 @@ public class CatalogServiceImpl implements CatalogService {
                 for (int i = 0; i < catalog.size(); i++) {
                     bookElement = catalog.get(i);
                     if (bookElement.hasNonNull("id")) {
-                        if (bookElement.get("id").textValue().equalsIgnoreCase(Integer.toString(id))) {
+                        if (bookElement.get("id").numberValue().equals(id)) {
                             ((ArrayNode) catalog).remove(i);
-                            ((ObjectNode) rootNode).putArray("catalog").add(catalog);
                             mapper.writeValue(file, rootNode);
                             return true;
                         }
@@ -143,7 +154,44 @@ public class CatalogServiceImpl implements CatalogService {
 
     @Override
     public BookDto readBookByAuthorAndTitle(String author, String title) {
-        return null;
+        ObjectMapper mapper = new ObjectMapper();
+        try {
+            File file = new File(bookCatalogDir + "\\BookCatalog.json");
+            JsonNode rootNode = mapper.readTree(file);
+            JsonNode catalog = rootNode.get("catalog");
+            JsonNode bookElement;
+            JsonNode titleBook;
+            if (catalog.isArray()) {
+                for (int i = 0; i < catalog.size(); i++) {
+                    bookElement = catalog.get(i);
+                    if ((bookElement.hasNonNull("author")) && (bookElement.hasNonNull("bookList"))) {
+                        if (bookElement.get("author").textValue().equalsIgnoreCase(author)) {
+                            for (int j = 0; j < bookElement.get("bookList").size(); j++) {
+                                titleBook = bookElement.get("bookList").get(j);
+                                if (titleBook.hasNonNull("title")) {
+                                    if (titleBook.get("title").textValue().equalsIgnoreCase(title)) {
+                                        return mapper.convertValue(titleBook, BookDto.class);
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+            return null;
+        } catch (IOException e) {
+            e.printStackTrace();
+            return null;
+        }
+//        String json;
+//        try {
+//            json = new String(Files.readAllBytes(Paths.get(bookCatalogDir + "\\BookCatalog.json")));
+//            return JsonPath.parse(json).read("$.catalog[?(@.author == '" + author +
+//                    "')].bookList[?(@.title == '" + title + "')]", BookDto.class);
+//        } catch (IOException | InvalidPathException e) {
+//            e.printStackTrace();
+//            return null;
+//        }
     }
 
 }

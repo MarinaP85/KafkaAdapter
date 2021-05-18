@@ -29,14 +29,13 @@ public interface CatalogService {
     AuthorDto readAuthorById(int id);
 
     /**
-     * Обновляет данные автора с заданным ID,
+     * Обновляет данные автора,
      * в соответствии с переданным автором
      *
      * @param author - автор в соответсвии с которым нужно обновить данные
-     * @param id     - id автора которого нужно обновить
      * @return - true если данные были обновлены, иначе false
      */
-    boolean updateAuthor(AuthorDto author, int id);
+    boolean updateAuthor(AuthorDto author);
 
     /**
      * Удаляет автора с заданным ID

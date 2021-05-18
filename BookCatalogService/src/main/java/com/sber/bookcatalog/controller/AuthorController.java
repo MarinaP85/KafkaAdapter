@@ -46,9 +46,9 @@ public class AuthorController {
                 : new ResponseEntity<>(HttpStatus.NOT_MODIFIED);
     }
 
-    @PutMapping(value = "/authors/{id}")
-    public ResponseEntity<?> updateAuthor(@PathVariable(name = "id") int id, @RequestBody AuthorDto author) {
-        final boolean updated = catalogService.updateAuthor(author, id);
+    @PutMapping(value = "/authors")
+    public ResponseEntity<?> updateAuthor(@RequestBody AuthorDto author) {
+        final boolean updated = catalogService.updateAuthor(author);
 
         return updated
                 ? new ResponseEntity<>(HttpStatus.OK)
@@ -66,11 +66,11 @@ public class AuthorController {
 
     @GetMapping(value = "/authors")
     public ResponseEntity<?> readBooksByAuthorAndTitle(@RequestParam String author,
-                                                      @RequestParam String title) {
-            BookDto book = catalogService.readBookByAuthorAndTitle(author, title);
-            return book != null
-                    ? new ResponseEntity<>(book, HttpStatus.OK)
-                    : new ResponseEntity<>(HttpStatus.NOT_FOUND);
+                                                       @RequestParam String title) {
+        BookDto book = catalogService.readBookByAuthorAndTitle(author, title);
+        return book != null
+                ? new ResponseEntity<>(book, HttpStatus.OK)
+                : new ResponseEntity<>(HttpStatus.NOT_FOUND);
     }
 
 }
