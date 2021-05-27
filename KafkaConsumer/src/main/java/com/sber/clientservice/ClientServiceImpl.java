@@ -18,6 +18,7 @@ public class ClientServiceImpl implements ClientService {
                 then().
                 extract().
                 response();
+        System.out.println(response.getStatusCode());
         System.out.println(response.body());
     }
 

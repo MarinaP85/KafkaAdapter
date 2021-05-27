@@ -1,40 +1,72 @@
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.sber.bookcatalog.BookCatalogApplication;
 import com.sber.bookcatalog.model.AuthorDto;
 import com.sber.bookcatalog.model.BookDto;
-import com.sber.bookcatalog.service.CatalogService;
+import com.sber.bookcatalog.service.BookCatalogService;
+import org.junit.AfterClass;
 import org.junit.Assert;
+import org.junit.BeforeClass;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.test.context.TestPropertySource;
+import org.springframework.http.MediaType;
 import org.springframework.test.context.junit4.SpringRunner;
+import org.springframework.test.web.servlet.MockMvc;
 
 import java.util.Arrays;
 import java.util.List;
 
+import static org.hamcrest.Matchers.hasSize;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
+
 @RunWith(SpringRunner.class)
 @SpringBootTest(
         classes = BookCatalogApplication.class)
-//@AutoConfigureMockMvc
-@TestPropertySource(
-        locations = "classpath:application.properties")
+@AutoConfigureMockMvc
 public class BookCatalogTest {
 
     @Autowired
-    private CatalogService catalogService;
+    private BookCatalogService bookCatalogService;
+
+    @Autowired
+    private MockMvc mockMvc;
+
+    private static BookDto book1;
+    private static BookDto book2;
+    private static AuthorDto author;
+
+    @BeforeClass
+    public static void beforeTests() {
+        book1 = new BookDto();
+        book1.setBookId(123);
+        book1.setTitle("testBook1");
+        book1.setPrice(100);
+
+        book2 = new BookDto();
+        book2.setBookId(123);
+        book2.setTitle("testBook2");
+        book2.setPrice(100);
+
+        author = new AuthorDto();
+        author.setId(500);
+        author.setAuthor("test");
+        author.setBookList(Arrays.asList(book1, book2));
+    }
 
     @Test
     public void readAllAuthorsTest() {
-        List<String> authors = catalogService.readAllAuthors();
+        List<String> authors = bookCatalogService.readAllAuthors();
         System.out.println(authors);
         Assert.assertEquals("Стивен Кинг", authors.get(0));
     }
 
     @Test
     public void readAuthorByIdTest() {
-        AuthorDto author = catalogService.readAuthorById(32);
+        AuthorDto author = bookCatalogService.readAuthorById(32);
         if (author != null) {
             System.out.println(author.toString());
         }
@@ -44,7 +76,7 @@ public class BookCatalogTest {
 
     @Test
     public void readBookByAuthorAndTitleTest() {
-        BookDto book = catalogService.readBookByAuthorAndTitle("Роберт М. Вегнер", "Небо цвета стали");
+        BookDto book = bookCatalogService.readBookByAuthorAndTitle("Роберт М. Вегнер", "Небо цвета стали");
         if (book != null) {
             System.out.println(book.toString());
         }
@@ -53,47 +85,95 @@ public class BookCatalogTest {
 
     @Test
     public void createAuthorTest() {
-        BookDto book1 = new BookDto();
-        book1.setBookId(123);
-        book1.setTitle("testBook1");
-        book1.setPrice(100);
-
-        BookDto book2 = new BookDto();
-        book2.setBookId(123);
-        book2.setTitle("testBook2");
-        book2.setPrice(100);
-
-        AuthorDto author = new AuthorDto();
-        author.setId(500);
-        author.setAuthor("test");
-        author.setBookList(Arrays.asList(book1, book2));
-
-        Assert.assertTrue(catalogService.createAuthor(author));
-    }
-
-    @Test
-    public void updateAuthorTest() {
-        BookDto book1 = new BookDto();
-        book1.setBookId(123);
-        book1.setTitle("testBook3");
-        book1.setPrice(100);
-
-        BookDto book2 = new BookDto();
-        book2.setBookId(123);
-        book2.setTitle("testBook4");
-        book2.setPrice(100);
-
-        AuthorDto author = new AuthorDto();
-        author.setId(500);
-        author.setAuthor("test0");
-        author.setBookList(Arrays.asList(book1, book2));
-
-        Assert.assertTrue(catalogService.updateAuthor(author));
+        Assert.assertTrue(bookCatalogService.createAuthor(author));
+        Assert.assertFalse(bookCatalogService.createAuthor(author));
+        Assert.assertTrue(bookCatalogService.deleteAuthor(author.getId()));
     }
 
     @Test
     public void deleteAuthorTest() {
-        Assert.assertTrue(catalogService.deleteAuthor(500));
-        Assert.assertFalse(catalogService.deleteAuthor(500));
+        //Assert.assertTrue(bookCatalogService.createAuthor(author));
+        Assert.assertTrue(bookCatalogService.deleteAuthor(author.getId()));
+        Assert.assertFalse(bookCatalogService.deleteAuthor(author.getId()));
+    }
+
+    @Test
+    public void updateAuthorTest() {
+        Assert.assertTrue(bookCatalogService.createAuthor(author));
+
+        book1.setTitle("testBook3");
+        book2.setTitle("testBook4");
+        author.setBookList(Arrays.asList(book1, book2));
+
+        Assert.assertTrue(bookCatalogService.updateAuthor(author));
+    }
+
+    @Test
+    public void readAllAuthors_AuthorController() throws Exception {
+        mockMvc.perform(
+                get("/authors/all")
+                        .header("genre", "fantasy"))
+                .andExpect(status().isOk())
+                //.andExpect(content().contentType(MediaType.))
+                .andExpect(jsonPath("$", hasSize(4)));
+    }
+
+    @Test
+    public void readAuthorById_AuthorController() throws Exception {
+        mockMvc.perform(
+                get("/authors/{id}", 32))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.id").value(32))
+                .andExpect(jsonPath("$.author").value("Стивен Кинг"));
+    }
+
+    @Test
+    public void createAuthor_AuthorController() throws Exception {
+        ObjectMapper mapper = new ObjectMapper();
+        mockMvc.perform(
+                post("/authors")
+                        .content(mapper.writeValueAsString(author))
+                        .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isCreated());
+    }
+
+    @Test
+    public void updateAuthor_AuthorController() throws Exception {
+        ObjectMapper mapper = new ObjectMapper();
+
+        book1.setTitle("testBook5");
+        book2.setTitle("testBook6");
+        author.setBookList(Arrays.asList(book1, book2));
+
+        mockMvc.perform(
+                put("/authors")
+                        .content(mapper.writeValueAsString(author))
+                        .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isOk());
+    }
+
+    @Test
+    public void deleteAuthor_AuthorController() throws Exception {
+        mockMvc.perform(
+                delete("/authors/{id}", author.getId()))
+                .andExpect(status().isOk());
+    }
+
+    @Test
+    public void readBooksByAuthorAndTitle_AuthorController() throws Exception {
+        mockMvc.perform(
+                get("/authors")
+                        .param("author", "Стивен Кинг")
+                        .param("title", "Колдун и кристалл"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.bookId").value(149))
+                .andExpect(jsonPath("$.price").value(390));
+    }
+
+    @AfterClass
+    public static void afterTests() {
+        author = null;
+        book1 = null;
+        book2 = null;
     }
 }

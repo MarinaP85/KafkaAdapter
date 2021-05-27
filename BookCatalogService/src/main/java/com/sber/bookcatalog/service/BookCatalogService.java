@@ -5,11 +5,11 @@ import com.sber.bookcatalog.model.BookDto;
 
 import java.util.List;
 
-public interface CatalogService {
+public interface BookCatalogService {
     /**
      * Создает нового автора
      *
-     * @param author - новый автор
+     * @param author - новый автор, должен быть не null
      */
     boolean createAuthor(AuthorDto author);
 
@@ -23,7 +23,7 @@ public interface CatalogService {
     /**
      * Возвращает автора по его ID
      *
-     * @param id - ID автора
+     * @param id - ID автора, должен быть больше 0
      * @return - автор с заданным ID
      */
     AuthorDto readAuthorById(int id);
@@ -32,7 +32,8 @@ public interface CatalogService {
      * Обновляет данные автора,
      * в соответствии с переданным автором
      *
-     * @param author - автор в соответсвии с которым нужно обновить данные
+     * @param author - автор в соответсвии с которым нужно обновить данные,
+     *               должен быть не null
      * @return - true если данные были обновлены, иначе false
      */
     boolean updateAuthor(AuthorDto author);
@@ -40,7 +41,7 @@ public interface CatalogService {
     /**
      * Удаляет автора с заданным ID
      *
-     * @param id - id автора, которого нужно удалить
+     * @param id - id автора, которого нужно удалить, должен быть больше 0
      * @return - true если автор был удален, иначе false
      */
     boolean deleteAuthor(int id);
@@ -48,8 +49,8 @@ public interface CatalogService {
     /**
      * Возвращает книгу по имени автора и названию
      *
-     * @param title  - название книги
-     * @param author - имя автора
+     * @param title  - название книги, строка должна быть не пустая
+     * @param author - имя автора, строка должна быть не пустая
      * @return - книга по имени автора и названию
      */
     BookDto readBookByAuthorAndTitle(String author, String title);
