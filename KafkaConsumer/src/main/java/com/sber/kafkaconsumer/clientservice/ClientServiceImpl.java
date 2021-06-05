@@ -1,6 +1,6 @@
-package com.sber.clientservice;
+package com.sber.kafkaconsumer.clientservice;
 
-import com.sber.kafkamsg.MessageDTO;
+import com.sber.kafkaconsumer.model.MessageDTO;
 import org.json.JSONException;
 import io.restassured.response.Response;
 import org.springframework.stereotype.Service;

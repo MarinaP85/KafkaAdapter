@@ -1,6 +1,6 @@
-package com.sber.kafkaconsumer;
+package com.sber.kafkaconsumer.configuration;
 
-import com.sber.kafkamsg.MessageDTO;
+import com.sber.kafkaconsumer.model.MessageDTO;
 import org.apache.kafka.clients.consumer.ConsumerConfig;
 import org.apache.kafka.common.serialization.StringDeserializer;
 import org.springframework.beans.factory.annotation.Value;

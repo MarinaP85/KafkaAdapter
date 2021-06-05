@@ -1,4 +1,4 @@
-package com.sber.clientservice;
+package com.sber.kafkaconsumer.clientservice;
 
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;

@@ -1,6 +1,6 @@
-package com.sber.kafkaproducer;
+package com.sber.kafkaproducer.runner;
 
-import com.sber.kafkamsg.MessageDTO;
+import com.sber.kafkaproducer.model.MessageDTO;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.kafka.core.KafkaTemplate;

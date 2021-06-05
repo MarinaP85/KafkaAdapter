@@ -1,4 +1,4 @@
-package com.sber.kafkamsg;
+package com.sber.kafkaproducer.model;
 
 import java.util.HashMap;
 

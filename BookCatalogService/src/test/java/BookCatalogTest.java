@@ -1,5 +1,6 @@
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.sber.bookcatalog.BookCatalogApplication;
+import com.sber.bookcatalog.exception.ServiceException;
 import com.sber.bookcatalog.model.AuthorDto;
 import com.sber.bookcatalog.model.BookDto;
 import com.sber.bookcatalog.service.BookCatalogService;
@@ -59,53 +60,87 @@ public class BookCatalogTest {
 
     @Test
     public void readAllAuthorsTest() {
-        List<String> authors = bookCatalogService.readAllAuthors();
-        System.out.println(authors);
-        Assert.assertEquals("Стивен Кинг", authors.get(0));
+        List<String> authors;
+        try {
+            authors = bookCatalogService.readAllAuthors();
+            System.out.println(authors);
+            Assert.assertEquals("Стивен Кинг", authors.get(0));
+        } catch (ServiceException e) {
+            System.err.println(e.getMessage());
+        }
+
     }
 
     @Test
     public void readAuthorByIdTest() {
-        AuthorDto author = bookCatalogService.readAuthorById(32);
-        if (author != null) {
-            System.out.println(author.toString());
+        AuthorDto author;
+        try {
+            author = bookCatalogService.readAuthorById(32);
+            if (author != null) {
+                System.out.println(author.toString());
+            }
+            Assert.assertNotNull(author);
+            Assert.assertEquals("Стивен Кинг", author.getAuthor());
+        } catch (ServiceException e) {
+            System.err.println(e.getMessage());
         }
-        Assert.assertNotNull(author);
-        Assert.assertEquals("Стивен Кинг", author.getAuthor());
+
     }
 
     @Test
     public void readBookByAuthorAndTitleTest() {
-        BookDto book = bookCatalogService.readBookByAuthorAndTitle("Роберт М. Вегнер", "Небо цвета стали");
-        if (book != null) {
-            System.out.println(book.toString());
+        BookDto book;
+        try {
+            book = bookCatalogService.readBookByAuthorAndTitle("Роберт М. Вегнер", "Небо цвета стали");
+            if (book != null) {
+                System.out.println(book.toString());
+            }
+            Assert.assertNotNull(book);
+        } catch (ServiceException e) {
+            System.err.println(e.getMessage());
         }
-        Assert.assertNotNull(book);
+
     }
 
     @Test
     public void createAuthorTest() {
-        Assert.assertTrue(bookCatalogService.createAuthor(author));
-        Assert.assertFalse(bookCatalogService.createAuthor(author));
-        Assert.assertTrue(bookCatalogService.deleteAuthor(author.getId()));
+        try {
+            Assert.assertTrue(bookCatalogService.createAuthor(author));
+            Assert.assertFalse(bookCatalogService.createAuthor(author));
+            Assert.assertTrue(bookCatalogService.deleteAuthor(author.getId()));
+        } catch (ServiceException e) {
+            System.err.println(e.getMessage());
+        }
+
     }
 
     @Test
     public void deleteAuthorTest() {
-        //Assert.assertTrue(bookCatalogService.createAuthor(author));
-        Assert.assertTrue(bookCatalogService.deleteAuthor(author.getId()));
-        Assert.assertFalse(bookCatalogService.deleteAuthor(author.getId()));
+        try {
+            //Assert.assertTrue(bookCatalogService.createAuthor(author));
+            Assert.assertTrue(bookCatalogService.deleteAuthor(author.getId()));
+            Assert.assertFalse(bookCatalogService.deleteAuthor(author.getId()));
+        } catch (ServiceException e) {
+            System.err.println(e.getMessage());
+        }
+
     }
 
     @Test
     public void updateAuthorTest() {
-        Assert.assertTrue(bookCatalogService.createAuthor(author));
+        try {
+            Assert.assertTrue(bookCatalogService.createAuthor(author));
 
-        book1.setTitle("testBook3");
-        book2.setTitle("testBook4");
-        author.setBookList(Arrays.asList(book1, book2));
+            book1.setTitle("testBook3");
+            book2.setTitle("testBook4");
+            author.setBookList(Arrays.asList(book1, book2));
 
-        Assert.assertTrue(bookCatalogService.updateAuthor(author));
+            Assert.assertTrue(bookCatalogService.updateAuthor(author));
+        } catch (ServiceException e) {
+            System.err.println(e.getMessage());
+        }
+
+
     }
 
     @Test
