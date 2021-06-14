@@ -4,6 +4,7 @@ public class BookDto {
     private int bookId;
     private String title;
     private double price;
+    private transient int authorId;
 
     public BookDto() {
     }
@@ -20,6 +21,10 @@ public class BookDto {
         return price;
     }
 
+    public int getAuthorId() {
+        return authorId;
+    }
+
     public void setBookId(int bookId) {
         this.bookId = bookId;
     }
@@ -32,12 +37,16 @@ public class BookDto {
         this.price = price;
     }
 
+    public void setAuthorId(int authorId) {
+        this.authorId = authorId;
+    }
+
     @Override
     public String toString() {
         return "Book{" +
-                "bookId=" + bookId + '\n' +
-                ", title='" + title + '\n' +
-                ", price=" + price +
-                '}' + '\n';
+                "bookId = " + bookId + '\n' +
+                ", title = '" + title + '\n' +
+                ", price = " + price + '\n' +
+                ", authorId = " + authorId + '}' + '\n';
     }
 }

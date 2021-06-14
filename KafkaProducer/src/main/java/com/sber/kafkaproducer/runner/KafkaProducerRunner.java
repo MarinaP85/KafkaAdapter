@@ -17,6 +17,7 @@ public class KafkaProducerRunner implements CommandLineRunner {
 
     @Override
     public void run(String... args) {
+        //отправка тестового сообщение, чтобы проверить работу Кафки
         HashMap<String, String> headers = new HashMap<>();
         headers.put("h1", "test1");
         headers.put("h2", "test2");

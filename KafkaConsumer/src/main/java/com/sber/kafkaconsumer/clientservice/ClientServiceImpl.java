@@ -1,64 +1,27 @@
 package com.sber.kafkaconsumer.clientservice;
 
-import com.sber.kafkaconsumer.model.MessageDTO;
-import org.json.JSONException;
+import com.sber.kafkaconsumer.exception.ClientException;
+import com.sber.kafkaconsumer.model.MessageDto;
 import io.restassured.response.Response;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import static io.restassured.RestAssured.given;
+import java.lang.reflect.Method;
+import java.util.Locale;
 
 @Service
 public class ClientServiceImpl implements ClientService {
-    @Override
-    public void getRequest(MessageDTO msgDTO) throws JSONException {
-        Response response = given().
-                headers(msgDTO.getHeaders()).
-                when().
-                get(msgDTO.getUrl() + msgDTO.getParameters()).
-                then().
-                extract().
-                response();
-        System.out.println(response.getStatusCode());
-        System.out.println(response.body());
-    }
 
-    @Override
-    public void postRequest(MessageDTO msgDTO) throws JSONException {
-        Response response = given().
-                headers(msgDTO.getHeaders()).
-                and().
-                body(msgDTO.getBody()).
-                when().
-                post(msgDTO.getUrl() + msgDTO.getParameters()).
-                then().
-                extract().
-                response();
-        System.out.println(response.getStatusCode());
-    }
+    @Autowired
+    private AssuredClient assuredClient;
 
-    @Override
-    public void putRequest(MessageDTO msgDTO) throws JSONException {
-        Response response = given().
-                headers(msgDTO.getHeaders()).
-                and().
-                body(msgDTO.getBody()).
-                when().
-                put(msgDTO.getUrl() + msgDTO.getParameters()).
-                then().
-                extract().
-                response();
-        System.out.println(response.getStatusCode());
-    }
-
-    @Override
-    public void deleteRequest(MessageDTO msgDTO) throws JSONException {
-        Response response = given().
-                headers(msgDTO.getHeaders()).
-                when().
-                delete(msgDTO.getUrl() + msgDTO.getParameters()).
-                then().
-                extract().
-                response();
-        System.out.println(response.getStatusCode());
+    public Response chooseMethod(MessageDto msgDto) throws ClientException {
+        try {
+            Method method = assuredClient.getClass().getMethod(
+                    msgDto.getMethod().toLowerCase(Locale.ROOT), MessageDto.class);
+            return (Response) method.invoke(assuredClient, msgDto);
+        } catch (Exception e) {
+            throw new ClientException("Ошибка работы клиента");
+        }
     }
 }

@@ -1,6 +1,6 @@
 package com.sber.kafkaconsumer.configuration;
 
-import com.sber.kafkaconsumer.model.MessageDTO;
+import com.sber.kafkaconsumer.model.MessageDto;
 import org.apache.kafka.clients.consumer.ConsumerConfig;
 import org.apache.kafka.common.serialization.StringDeserializer;
 import org.springframework.beans.factory.annotation.Value;
@@ -34,9 +34,9 @@ public class KafkaConsumerConfig {
 
 
     @Bean
-    public ConcurrentKafkaListenerContainerFactory<String, MessageDTO> msgKafkaListenerContainerFactory() {
-        ConcurrentKafkaListenerContainerFactory<String, MessageDTO> factory = new ConcurrentKafkaListenerContainerFactory<>();
-        factory.setConsumerFactory(consumerFactory(MessageDTO.class));
+    public ConcurrentKafkaListenerContainerFactory<String, MessageDto> msgKafkaListenerContainerFactory() {
+        ConcurrentKafkaListenerContainerFactory<String, MessageDto> factory = new ConcurrentKafkaListenerContainerFactory<>();
+        factory.setConsumerFactory(consumerFactory(MessageDto.class));
         return factory;
     }
 

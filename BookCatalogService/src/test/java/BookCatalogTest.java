@@ -25,8 +25,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 
 @RunWith(SpringRunner.class)
-@SpringBootTest(
-        classes = BookCatalogApplication.class)
+@SpringBootTest(classes = BookCatalogApplication.class)
 @AutoConfigureMockMvc
 public class BookCatalogTest {
 
@@ -147,7 +146,7 @@ public class BookCatalogTest {
     public void readAllAuthors_AuthorController() throws Exception {
         mockMvc.perform(
                 get("/authors/all")
-                        .header("genre", "fantasy"))
+                        .header("Content-Language", "ru, en"))
                 .andExpect(status().isOk())
                 //.andExpect(content().contentType(MediaType.))
                 .andExpect(jsonPath("$", hasSize(4)));

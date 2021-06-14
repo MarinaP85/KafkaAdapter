@@ -37,9 +37,9 @@ public class AuthorDto {
     @Override
     public String toString() {
         return "Author{" +
-                "id=" + id + '\n' +
-                ", author='" + author + '\n' +
-                ", bookList=" + bookList.toString() +
+                "id = " + id + '\n' +
+                ", author = '" + author + '\n' +
+                ", bookList = " + bookList.toString() +
                 '}';
     }
 }

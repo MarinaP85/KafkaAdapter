@@ -1,19 +1,17 @@
 package com.sber.kafkaconsumer.clientservice;
 
-import com.sber.kafkaconsumer.model.MessageDTO;
-import org.json.JSONException;
+import com.sber.kafkaconsumer.exception.ClientException;
+import com.sber.kafkaconsumer.model.MessageDto;
+import io.restassured.response.Response;
 
 public interface ClientService {
-    @KafkaMethod(method = "GET")
-    void getRequest(MessageDTO msgDTO) throws JSONException;
 
-    @KafkaMethod(method = "POST")
-    void postRequest(MessageDTO msgDTO) throws JSONException;
-
-    @KafkaMethod(method = "PUT")
-    void putRequest(MessageDTO msgDTO) throws JSONException;
-
-    @KafkaMethod(method = "DELETE")
-    void deleteRequest(MessageDTO msgDTO) throws JSONException;
-
+    /**
+     * Выбирает и выполняет выбранный метод AssuredClient на основе данных параметра
+     *
+     * @param msgDto - все данные запроса в формате MessageDto, должен быть не null
+     * @throws ClientException - ошибка выполнения метода AssuredClient,
+     *                         либо нужный метод не найден
+     */
+    Response chooseMethod(MessageDto msgDto) throws ClientException;
 }

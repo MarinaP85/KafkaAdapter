@@ -2,7 +2,7 @@ package com.sber.kafkaconsumer.model;
 
 import java.util.HashMap;
 
-public class MessageDTO {
+public class MessageDto {
     private String method;
     private String url;
     private String body;

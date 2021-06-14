@@ -26,6 +26,9 @@ public class BookCatalogRepositoryImpl implements BookCatalogRepository {
 
     @Override
     public boolean createAuthor(AuthorDto author) throws IOException {
+        //проходим по веткам файла, если id переданного автора не найден,
+        //добавляем в конец и возвращаем true
+        //если такой автор существует, возвращаем false
         ObjectMapper mapper = new ObjectMapper();
         mapper.configure(SerializationFeature.INDENT_OUTPUT, true);
 
@@ -56,6 +59,7 @@ public class BookCatalogRepositoryImpl implements BookCatalogRepository {
 
     @Override
     public List<String> readAllAuthors() throws IOException {
+        //проходим по веткам верхнего уровня, находим и возвращаем список всех имен авторов
         ObjectMapper mapper = new ObjectMapper();
         File file = new File(bookCatalogDir + "\\BookCatalog.json");
         JsonNode rootNode = mapper.readTree(file);
@@ -67,6 +71,9 @@ public class BookCatalogRepositoryImpl implements BookCatalogRepository {
 
     @Override
     public AuthorDto readAuthorById(int id) throws IOException {
+        //проходим по веткам файла, если заданный id найден,
+        //возвращаем соответствующую ветку, преобразованную в AuthorDto,
+        //в противном случае возвращаем null
         ObjectMapper mapper = new ObjectMapper();
         File file = new File(bookCatalogDir + "\\BookCatalog.json");
         JsonNode rootNode = mapper.readTree(file);
@@ -87,6 +94,9 @@ public class BookCatalogRepositoryImpl implements BookCatalogRepository {
 
     @Override
     public boolean updateAuthor(AuthorDto author) throws IOException {
+        //проходим по веткам файла, если id переданного автора найден,
+        //удаляем ветку и на ее место добавляем переданной объект AuthorDto и возвращаем true
+        //если такой автор не существует, возвращаем false
         ObjectMapper mapper = new ObjectMapper();
         mapper.configure(SerializationFeature.INDENT_OUTPUT, true);
         File file = new File(bookCatalogDir + "\\BookCatalog.json");
@@ -111,6 +121,9 @@ public class BookCatalogRepositoryImpl implements BookCatalogRepository {
 
     @Override
     public boolean deleteAuthor(int id) throws IOException {
+        //проходим по веткам файла, если id переданного автора найден,
+        //удаляем ветку и возвращаем true
+        //если такой автор не существует, возвращаем false
         ObjectMapper mapper = new ObjectMapper();
         mapper.configure(SerializationFeature.INDENT_OUTPUT, true);
         File file = new File(bookCatalogDir + "\\BookCatalog.json");
@@ -134,7 +147,12 @@ public class BookCatalogRepositoryImpl implements BookCatalogRepository {
 
     @Override
     public BookDto readBookByAuthorAndTitle(String author, String title) throws IOException {
+        //проходим по веткам файла, если заданное имя автора и назвние книги найдены,
+        //возвращаем соответствующую ветку, преобразованную в BookDto,
+        //в противном случае возвращаем null
         ObjectMapper mapper = new ObjectMapper();
+        int authorId;
+        BookDto result;
         File file = new File(bookCatalogDir + "\\BookCatalog.json");
         JsonNode rootNode = mapper.readTree(file);
         JsonNode catalog = rootNode.get("catalog");
@@ -145,11 +163,14 @@ public class BookCatalogRepositoryImpl implements BookCatalogRepository {
                 bookElement = catalog.get(i);
                 if ((bookElement.hasNonNull("author")) && (bookElement.hasNonNull("bookList"))) {
                     if (bookElement.get("author").textValue().equalsIgnoreCase(author)) {
+                        authorId = bookElement.get("id").asInt();
                         for (int j = 0; j < bookElement.get("bookList").size(); j++) {
                             titleBook = bookElement.get("bookList").get(j);
                             if (titleBook.hasNonNull("title")) {
                                 if (titleBook.get("title").textValue().equalsIgnoreCase(title)) {
-                                    return mapper.convertValue(titleBook, BookDto.class);
+                                    result = mapper.convertValue(titleBook, BookDto.class);
+                                    result.setAuthorId(authorId);
+                                    return result;
                                 }
                             }
                         }
