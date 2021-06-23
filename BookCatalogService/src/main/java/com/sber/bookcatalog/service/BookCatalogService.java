@@ -1,10 +1,9 @@
 package com.sber.bookcatalog.service;
 
 import com.sber.bookcatalog.exception.ServiceException;
-import com.sber.bookcatalog.model.AuthorDto;
-import com.sber.bookcatalog.model.BookDto;
+import com.sber.bookcatalog.model.Author;
+import com.sber.bookcatalog.model.Book;
 
-import java.io.IOException;
 import java.util.List;
 
 public interface BookCatalogService {
@@ -12,8 +11,9 @@ public interface BookCatalogService {
      * Создает нового автора
      *
      * @param author - новый автор, должен быть не null
+     * @return - автор с созданным ID
      */
-    boolean createAuthor(AuthorDto author) throws ServiceException;
+    Author createAuthor(Author author) throws ServiceException;
 
     /**
      * Возвращает список имен всех авторов
@@ -28,7 +28,7 @@ public interface BookCatalogService {
      * @param id - ID автора, должен быть больше 0
      * @return - автор с заданным ID
      */
-    AuthorDto readAuthorById(int id) throws ServiceException;
+    Author readAuthorById(long id) throws ServiceException;
 
     /**
      * Обновляет данные автора,
@@ -36,9 +36,11 @@ public interface BookCatalogService {
      *
      * @param author - автор в соответсвии с которым нужно обновить данные,
      *               должен быть не null
+     * @param id     - ID, в соответсвии с которым нужно обновить данные автора,
+     *               должен быть >-1
      * @return - true если данные были обновлены, иначе false
      */
-    boolean updateAuthor(AuthorDto author) throws ServiceException;
+    boolean updateAuthor(long id, Author author) throws ServiceException;
 
     /**
      * Удаляет автора с заданным ID
@@ -46,7 +48,7 @@ public interface BookCatalogService {
      * @param id - id автора, которого нужно удалить, должен быть больше 0
      * @return - true если автор был удален, иначе false
      */
-    boolean deleteAuthor(int id) throws ServiceException;
+    boolean deleteAuthor(long id) throws ServiceException;
 
     /**
      * Возвращает книгу по имени автора и названию
@@ -55,6 +57,6 @@ public interface BookCatalogService {
      * @param author - имя автора, строка должна быть не пустая
      * @return - книга по имени автора и названию
      */
-    BookDto readBookByAuthorAndTitle(String author, String title) throws ServiceException;
+    Book readBookByAuthorAndTitle(String author, String title) throws ServiceException;
 
 }

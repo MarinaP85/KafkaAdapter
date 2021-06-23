@@ -1,87 +1,120 @@
 package com.sber.bookcatalog.service;
 
 import com.sber.bookcatalog.exception.ServiceException;
-import com.sber.bookcatalog.model.AuthorDto;
-import com.sber.bookcatalog.model.BookDto;
-import com.sber.bookcatalog.repository.BookCatalogRepository;
+import com.sber.bookcatalog.model.Author;
+import com.sber.bookcatalog.model.Book;
+import com.sber.bookcatalog.repository.AuthorRepositoryJpa;
+import com.sber.bookcatalog.repository.BookRepositoryJpa;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
-import java.io.IOException;
 import java.util.List;
+import java.util.Optional;
 
 @Service
 public class BookCatalogServiceImpl implements BookCatalogService {
 
-    private final BookCatalogRepository bookCatalogRepository;
+    @Autowired
+    AuthorRepositoryJpa authorRepositoryJpa;
 
     @Autowired
-    public BookCatalogServiceImpl(BookCatalogRepository bookCatalogRepository) {
-        this.bookCatalogRepository = bookCatalogRepository;
-    }
+    BookRepositoryJpa bookRepositoryJpa;
 
+    @Transactional
     @Override
-    public boolean createAuthor(AuthorDto author) throws ServiceException {
+    public Author createAuthor(Author author) throws ServiceException {
         if (author != null) {
             try {
-                return bookCatalogRepository.createAuthor(author);
-            } catch (IOException e) {
-                throw new ServiceException("Ошибка каталога");
+                List<Book> bookList = author.getBookList();
+                bookList.forEach(book -> book.setAuthor(author));
+                author.setBookList(bookList);
+
+                return authorRepositoryJpa.save(author);
+                //return bookCatalogRepository.createAuthor(author);
+            } catch (Exception e) {
+                throw new ServiceException("Ошибка каталога: " + e.getMessage());
             }
 
-        } else return false;
+        } else return null;
     }
 
+    @Transactional
     @Override
     public List<String> readAllAuthors() throws ServiceException {
         try {
-            return bookCatalogRepository.readAllAuthors();
-        } catch (IOException e) {
-            throw new ServiceException("Ошибка каталога");
+            return authorRepositoryJpa.readAllAuthors();
+            //return bookCatalogRepository.readAllAuthors();
+        } catch (Exception e) {
+            throw new ServiceException("Ошибка каталога: " + e.getMessage());
         }
 
     }
 
+    @Transactional
     @Override
-    public AuthorDto readAuthorById(int id) throws ServiceException {
+    public Author readAuthorById(long id) throws ServiceException {
         if (id > 0) {
             try {
-                return bookCatalogRepository.readAuthorById(id);
-            } catch (IOException e) {
-                throw new ServiceException("Ошибка каталога");
+                return authorRepositoryJpa.findById(id).orElse(null);
+                //return bookCatalogRepository.readAuthorById(id);
+            } catch (Exception e) {
+                throw new ServiceException("Ошибка каталога: " + e.getMessage());
             }
         } else return null;
     }
 
+    @Transactional
     @Override
-    public boolean updateAuthor(AuthorDto author) throws ServiceException {
+    public boolean updateAuthor(long id, Author author) throws ServiceException {
         if (author != null) {
             try {
-                return bookCatalogRepository.updateAuthor(author);
-            } catch (IOException e) {
-                throw new ServiceException("Ошибка каталога");
+                List<Book> bookList = author.getBookList();
+                bookList.forEach(book -> book.setAuthor(author));
+                author.setBookList(bookList);
+
+                Optional<Author> optionalAuthor = authorRepositoryJpa.findById(id);
+                if (optionalAuthor.isPresent()) {
+                    author.setId(id);
+                    authorRepositoryJpa.save(author);
+                    return true;
+                } else {
+                    return false;
+                }
+                //return bookCatalogRepository.updateAuthor(author);
+            } catch (Exception e) {
+                throw new ServiceException("Ошибка каталога: " + e.getMessage());
             }
         } else return false;
     }
 
+    @Transactional
     @Override
-    public boolean deleteAuthor(int id) throws ServiceException {
+    public boolean deleteAuthor(long id) throws ServiceException {
         if (id > 0) {
             try {
-                return bookCatalogRepository.deleteAuthor(id);
-            } catch (IOException e) {
-                throw new ServiceException("Ошибка каталога");
+                if (authorRepositoryJpa.findById(id).isPresent()) {
+                    authorRepositoryJpa.deleteById(id);
+                    return true;
+                } else {
+                    return false;
+                }
+                //return bookCatalogRepository.deleteAuthor(id);
+            } catch (Exception e) {
+                throw new ServiceException("Ошибка каталога: " + e.getMessage());
             }
         } else return false;
     }
 
+    @Transactional
     @Override
-    public BookDto readBookByAuthorAndTitle(String author, String title) throws ServiceException {
+    public Book readBookByAuthorAndTitle(String author, String title) throws ServiceException {
         if ((author.length() > 0) && (title.length() > 0)) {
             try {
-                return bookCatalogRepository.readBookByAuthorAndTitle(author, title);
-            } catch (IOException e) {
-                throw new ServiceException("Ошибка каталога");
+                return bookRepositoryJpa.readBookByAuthorAndTitle(author, title).get(0);
+                //return bookCatalogRepository.readBookByAuthorAndTitle(author, title);
+            } catch (Exception e) {
+                throw new ServiceException("Ошибка каталога: " + e.getMessage());
             }
         } else return null;
     }

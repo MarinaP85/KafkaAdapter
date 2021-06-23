@@ -1,8 +1,8 @@
 package com.sber.bookcatalog.controller;
 
 import com.sber.bookcatalog.exception.ServiceException;
-import com.sber.bookcatalog.model.AuthorDto;
-import com.sber.bookcatalog.model.BookDto;
+import com.sber.bookcatalog.model.Author;
+import com.sber.bookcatalog.model.Book;
 import com.sber.bookcatalog.service.BookCatalogService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -35,9 +35,9 @@ public class AuthorController {
     }
 
     @GetMapping(value = "/authors/{id}")
-    public ResponseEntity<AuthorDto> readAuthorById(@PathVariable(name = "id") int id)
+    public ResponseEntity<Author> readAuthorById(@PathVariable(name = "id") long id)
             throws ServiceException {
-        final AuthorDto author = bookCatalogService.readAuthorById(id);
+        final Author author = bookCatalogService.readAuthorById(id);
 
         return author != null
                 ? new ResponseEntity<>(author, HttpStatus.OK)
@@ -45,16 +45,17 @@ public class AuthorController {
     }
 
     @PostMapping(value = "/authors")
-    public ResponseEntity<?> createAuthor(@RequestBody AuthorDto author) throws ServiceException {
-        final boolean create = bookCatalogService.createAuthor(author);
-        return create
-                ? new ResponseEntity<>(HttpStatus.CREATED)
+    public ResponseEntity<Author> createAuthor(@RequestBody Author author) throws ServiceException {
+        final Author returnAuthor = bookCatalogService.createAuthor(author);
+        return returnAuthor != null
+                ? new ResponseEntity<>(returnAuthor, HttpStatus.CREATED)
                 : new ResponseEntity<>(HttpStatus.NOT_MODIFIED);
     }
 
-    @PutMapping(value = "/authors")
-    public ResponseEntity<?> updateAuthor(@RequestBody AuthorDto author) throws ServiceException {
-        final boolean updated = bookCatalogService.updateAuthor(author);
+    @PutMapping(value = "/authors/{id}")
+    public ResponseEntity<?> updateAuthor(@PathVariable(name = "id") long id,
+                                          @RequestBody Author author) throws ServiceException {
+        final boolean updated = bookCatalogService.updateAuthor(id, author);
 
         return updated
                 ? new ResponseEntity<>(HttpStatus.OK)
@@ -62,7 +63,7 @@ public class AuthorController {
     }
 
     @DeleteMapping(value = "/authors/{id}")
-    public ResponseEntity<?> deleteAuthor(@PathVariable(name = "id") int id) throws ServiceException {
+    public ResponseEntity<?> deleteAuthor(@PathVariable(name = "id") long id) throws ServiceException {
         final boolean deleted = bookCatalogService.deleteAuthor(id);
 
         return deleted
@@ -74,7 +75,7 @@ public class AuthorController {
     public ResponseEntity<?> readBooksByAuthorAndTitle(@RequestParam String author,
                                                        @RequestParam String title)
             throws ServiceException {
-        BookDto book = bookCatalogService.readBookByAuthorAndTitle(author, title);
+        Book book = bookCatalogService.readBookByAuthorAndTitle(author, title);
         return book != null
                 ? new ResponseEntity<>(book, HttpStatus.OK)
                 : new ResponseEntity<>(HttpStatus.NOT_FOUND);

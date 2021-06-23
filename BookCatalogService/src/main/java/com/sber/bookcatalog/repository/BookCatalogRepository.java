@@ -1,7 +1,7 @@
 package com.sber.bookcatalog.repository;
 
-import com.sber.bookcatalog.model.AuthorDto;
-import com.sber.bookcatalog.model.BookDto;
+import com.sber.bookcatalog.model.Author;
+import com.sber.bookcatalog.model.Book;
 
 import java.io.IOException;
 import java.util.List;
@@ -12,7 +12,7 @@ public interface BookCatalogRepository {
      *
      * @param author - новый автор
      */
-    boolean createAuthor(AuthorDto author) throws IOException;
+    boolean createAuthor(Author author) throws IOException;
 
     /**
      * Возвращает список имен всех авторов
@@ -27,7 +27,7 @@ public interface BookCatalogRepository {
      * @param id - ID автора
      * @return - автор с заданным ID
      */
-    AuthorDto readAuthorById(int id) throws IOException;
+    Author readAuthorById(int id) throws IOException;
 
     /**
      * Обновляет данные автора,
@@ -36,7 +36,7 @@ public interface BookCatalogRepository {
      * @param author - автор в соответсвии с которым нужно обновить данные
      * @return - true если данные были обновлены, иначе false
      */
-    boolean updateAuthor(AuthorDto author) throws IOException;
+    boolean updateAuthor(Author author) throws IOException;
 
     /**
      * Удаляет автора с заданным ID
@@ -53,5 +53,5 @@ public interface BookCatalogRepository {
      * @param author - имя автора
      * @return - книга по имени автора и названию
      */
-    BookDto readBookByAuthorAndTitle(String author, String title) throws IOException;
+    Book readBookByAuthorAndTitle(String author, String title) throws IOException;
 }
