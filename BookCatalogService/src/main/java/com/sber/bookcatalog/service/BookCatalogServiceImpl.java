@@ -31,7 +31,6 @@ public class BookCatalogServiceImpl implements BookCatalogService {
                 author.setBookList(bookList);
 
                 return authorRepositoryJpa.save(author);
-                //return bookCatalogRepository.createAuthor(author);
             } catch (Exception e) {
                 throw new ServiceException("Ошибка каталога: " + e.getMessage());
             }
@@ -44,7 +43,6 @@ public class BookCatalogServiceImpl implements BookCatalogService {
     public List<String> readAllAuthors() throws ServiceException {
         try {
             return authorRepositoryJpa.readAllAuthors();
-            //return bookCatalogRepository.readAllAuthors();
         } catch (Exception e) {
             throw new ServiceException("Ошибка каталога: " + e.getMessage());
         }
@@ -57,7 +55,6 @@ public class BookCatalogServiceImpl implements BookCatalogService {
         if (id > 0) {
             try {
                 return authorRepositoryJpa.findById(id).orElse(null);
-                //return bookCatalogRepository.readAuthorById(id);
             } catch (Exception e) {
                 throw new ServiceException("Ошибка каталога: " + e.getMessage());
             }
@@ -81,7 +78,6 @@ public class BookCatalogServiceImpl implements BookCatalogService {
                 } else {
                     return false;
                 }
-                //return bookCatalogRepository.updateAuthor(author);
             } catch (Exception e) {
                 throw new ServiceException("Ошибка каталога: " + e.getMessage());
             }
@@ -99,7 +95,6 @@ public class BookCatalogServiceImpl implements BookCatalogService {
                 } else {
                     return false;
                 }
-                //return bookCatalogRepository.deleteAuthor(id);
             } catch (Exception e) {
                 throw new ServiceException("Ошибка каталога: " + e.getMessage());
             }
@@ -112,7 +107,6 @@ public class BookCatalogServiceImpl implements BookCatalogService {
         if ((author.length() > 0) && (title.length() > 0)) {
             try {
                 return bookRepositoryJpa.readBookByAuthorAndTitle(author, title).get(0);
-                //return bookCatalogRepository.readBookByAuthorAndTitle(author, title);
             } catch (Exception e) {
                 throw new ServiceException("Ошибка каталога: " + e.getMessage());
             }

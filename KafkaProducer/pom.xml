@@ -51,11 +51,6 @@
             <version>2.7.0</version>
             <scope>test</scope>
         </dependency>
-        <dependency>
-            <groupId>com.sberschool</groupId>
-            <artifactId>KafkaProducer</artifactId>
-            <version>1.0-SNAPSHOT</version>
-        </dependency>
     </dependencies>
 
     <properties>

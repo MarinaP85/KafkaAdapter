@@ -6,6 +6,7 @@ import com.sber.bookcatalog.model.Book;
 import java.io.IOException;
 import java.util.List;
 
+//не используется, писалось для старого варианта с JSON-каталогом
 public interface BookCatalogRepository {
     /**
      * Создает нового автора
@@ -33,10 +34,13 @@ public interface BookCatalogRepository {
      * Обновляет данные автора,
      * в соответствии с переданным автором
      *
-     * @param author - автор в соответсвии с которым нужно обновить данные
+     * @param author - автор в соответсвии с которым нужно обновить данные,
+     *               должен быть не null
+     * @param id     - ID, в соответсвии с которым нужно обновить данные автора,
+     *               должен быть >-1
      * @return - true если данные были обновлены, иначе false
      */
-    boolean updateAuthor(Author author) throws IOException;
+    boolean updateAuthor(int id, Author author) throws IOException;
 
     /**
      * Удаляет автора с заданным ID

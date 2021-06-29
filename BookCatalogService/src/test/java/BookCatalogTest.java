@@ -126,7 +126,6 @@ public class BookCatalogTest {
         try {
             author = bookCatalogService.readAuthorById(testAuthor.getId());
             if (author != null) {
-                System.out.println(author.getName());
                 System.out.println(author.toString());
             }
             Assertions.assertNotNull(author);
@@ -152,13 +151,22 @@ public class BookCatalogTest {
     }
 
     @Test
-    public void createDeleteAuthorTest() {
+    public void createAuthorTest() {
         try {
             Author returnAuthor = bookCatalogService.createAuthor(author);
             Assertions.assertNotNull(returnAuthor);
             System.out.println(returnAuthor.getName());
-            Assertions.assertTrue(bookCatalogService.deleteAuthor(returnAuthor.getId()));
-            Assertions.assertFalse(bookCatalogService.deleteAuthor(returnAuthor.getId()));
+        } catch (ServiceException e) {
+            System.err.println(e.getMessage());
+        }
+
+    }
+
+    @Test
+    public void deleteAuthorTest() {
+        try {
+            Assertions.assertTrue(bookCatalogService.deleteAuthor(testAuthor.getId()));
+            Assertions.assertFalse(bookCatalogService.deleteAuthor(testAuthor.getId()));
         } catch (ServiceException e) {
             System.err.println(e.getMessage());
         }
@@ -169,7 +177,6 @@ public class BookCatalogTest {
     public void updateAuthorTest() {
         try {
             Author returnAuthor = bookCatalogService.createAuthor(author);
-            Assertions.assertNotNull(returnAuthor);
 
             book1.setTitle("testBook3");
             book2.setTitle("testBook4");

@@ -108,11 +108,11 @@ public class KafkaConsumerTest {
         System.out.println("Сообщение отправлено");
 
         //ждем, когда сообщение будет принято
-        kafkaListener.getLatch().await(15000, TimeUnit.MILLISECONDS);
+        kafkaListener.getLatch().await(40000, TimeUnit.MILLISECONDS);
         Assert.assertEquals(kafkaListener.getLatch().getCount(), 0L);
         System.out.println("Сообщение получено");
 
-        MessageDto msgResult = kafkaListener.getMsgDTO();
+        MessageDto msgResult = kafkaListener.getMsgDto();
         System.out.println(msgResult.getUrl());
 
         //задаем параметры WireMock-запроса
@@ -127,46 +127,12 @@ public class KafkaConsumerTest {
         try {
             Response response = clientService.chooseMethod(msgResult);
             System.out.println(response.getStatusCode());
-            System.out.println(response.body());
+            System.out.println(response.getBody().asString());
             Assert.assertEquals(response.statusCode(), 200);
         } catch (ClientException e) {
             System.err.println(e.getMessage());
         }
 
-
-    }
-
-    @Test
-    public void testConsumerWithoutMocking() throws Exception {
-        HashMap<String, String> headers = new HashMap<>();
-        headers.put("Content-Language", "ru, en");
-
-        MessageDto msgTest = new MessageDto();
-        msgTest.setMethod("GET");
-        msgTest.setBody("");
-        msgTest.setHeaders(headers);
-        msgTest.setParameters("author=Стивен Кинг&title=Колдун и кристалл");
-        msgTest.setUrl("/authors");
-
-        ListenableFuture<SendResult<String, Object>> msgFuture = template.send("Message1", "msg", msgTest);
-        msgFuture.addCallback(System.out::println, System.err::println);
-        System.out.println("Сообщение отправлено");
-
-        kafkaListener.getLatch().await(15000, TimeUnit.MILLISECONDS);
-        Assert.assertEquals(kafkaListener.getLatch().getCount(), 0L);
-        System.out.println("Сообщение получено");
-
-        MessageDto msgResult = kafkaListener.getMsgDTO();
-        System.out.println(msgResult.getUrl());
-
-        try {
-            Response response = clientService.chooseMethod(msgResult);
-            System.out.println(response.getStatusCode());
-            System.out.println(response.body());
-            Assert.assertEquals(response.statusCode(), 200);
-        } catch (ClientException e) {
-            System.err.println(e.getMessage());
-        }
 
     }
 

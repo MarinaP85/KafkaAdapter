@@ -1,6 +1,6 @@
 package com.sber.kafkaproducer.runner;
 
-import com.sber.kafkaproducer.model.MessageDTO;
+import com.sber.kafkaproducer.model.MessageDto;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.kafka.core.KafkaTemplate;
@@ -13,7 +13,7 @@ import java.util.HashMap;
 @Component
 public class KafkaProducerRunner implements CommandLineRunner {
     @Autowired
-    private KafkaTemplate<String, MessageDTO> kafkaMessageTemplate;
+    private KafkaTemplate<String, MessageDto> kafkaMessageTemplate;
 
     @Override
     public void run(String... args) {
@@ -22,13 +22,13 @@ public class KafkaProducerRunner implements CommandLineRunner {
         headers.put("h1", "test1");
         headers.put("h2", "test2");
 
-        MessageDTO msgTest = new MessageDTO();
+        MessageDto msgTest = new MessageDto();
         msgTest.setMethod("GET");
         msgTest.setBody("test");
         msgTest.setHeaders(headers);
         msgTest.setUrl("/test");
         msgTest.setParameters("param");
-        ListenableFuture<SendResult<String, MessageDTO>> msgFuture = kafkaMessageTemplate.send("Message1", "msg", msgTest);
+        ListenableFuture<SendResult<String, MessageDto>> msgFuture = kafkaMessageTemplate.send("Message1", "msg", msgTest);
         msgFuture.addCallback(System.out::println, System.err::println);
 
     }

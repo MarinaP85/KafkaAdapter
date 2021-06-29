@@ -13,6 +13,7 @@ import java.io.File;
 import java.io.IOException;
 import java.util.List;
 
+//не используется, писалось для старого варианта с JSON-каталогом
 public class BookCatalogRepositoryJson implements BookCatalogRepository {
 
     private final String bookCatalogDir;
@@ -91,8 +92,8 @@ public class BookCatalogRepositoryJson implements BookCatalogRepository {
     }
 
     @Override
-    public boolean updateAuthor(Author author) throws IOException {
-        //проходим по веткам файла, если id переданного автора найден,
+    public boolean updateAuthor(int id, Author author) throws IOException {
+        //проходим по веткам файла, если id найден,
         //удаляем ветку и на ее место добавляем переданной объект Author и возвращаем true
         //если такой автор не существует, возвращаем false
         ObjectMapper mapper = new ObjectMapper();
@@ -105,7 +106,8 @@ public class BookCatalogRepositoryJson implements BookCatalogRepository {
             for (int i = 0; i < catalog.size(); i++) {
                 bookElement = catalog.get(i);
                 if (bookElement.hasNonNull("id")) {
-                    if (bookElement.get("id").numberValue().equals(author.getId())) {
+                    if (bookElement.get("id").numberValue().equals(id)) {
+                        author.setId(id);
                         ((ArrayNode) catalog).remove(i);
                         ((ArrayNode) catalog).addPOJO(author);
                         mapper.writeValue(file, rootNode);

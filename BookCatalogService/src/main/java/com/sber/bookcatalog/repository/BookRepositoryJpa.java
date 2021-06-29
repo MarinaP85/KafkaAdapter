@@ -12,5 +12,5 @@ import java.util.List;
 public interface BookRepositoryJpa extends JpaRepository<Book, Long> {
 
     @Query("select b from Book b left join Author a on b.author = a where b.title = :title and a.name = :name")
-    List<Book> readBookByAuthorAndTitle(@Param("name") String authorName, @Param("title") String title);
+    List<Book> readBookByAuthorAndTitle(@Param("name") String name, @Param("title") String title);
 }

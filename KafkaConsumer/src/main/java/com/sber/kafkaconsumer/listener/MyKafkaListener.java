@@ -15,22 +15,16 @@ public class MyKafkaListener {
 
     private final CountDownLatch latch = new CountDownLatch(1);
 
-    private MessageDto msgDTO = null;
+    private MessageDto msgDto = null;
 
-//    private final ClientService clientService;
-//
-//    @Autowired
-//    public MyKafkaListener(ClientService clientService) {
-//        this.clientService = clientService;
-//    }
-
-    @KafkaListener(topics = "Message1", containerFactory = "msgKafkaListenerContainerFactory", groupId = "msgConsumer")
-    public void messageListener(@Payload MessageDto msgDTO) {
+    @KafkaListener(topics = "Message1", containerFactory = "msgKafkaListenerContainerFactory",
+            groupId = "msgConsumer")
+    public void messageListener(@Payload MessageDto msgDto) {
         //прослушиваем заданную тему в Кафке
         //если получили сообщение, пишем его в msgDTO
         //и сбрасываем счетчик latch,чтобы отследить момент,
         //когда сообщение было успешно получено
-        this.msgDTO = msgDTO;
+        this.msgDto = msgDto;
         latch.countDown();
     }
 
@@ -38,8 +32,8 @@ public class MyKafkaListener {
         return latch;
     }
 
-    public MessageDto getMsgDTO() {
-        return msgDTO;
+    public MessageDto getMsgDto() {
+        return msgDto;
     }
 
 }
