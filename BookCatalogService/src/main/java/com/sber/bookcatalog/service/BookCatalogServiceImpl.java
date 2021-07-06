@@ -40,9 +40,20 @@ public class BookCatalogServiceImpl implements BookCatalogService {
 
     @Transactional
     @Override
-    public List<String> readAllAuthors() throws ServiceException {
+    public List<Author> readAllAuthors() throws ServiceException {
         try {
-            return authorRepositoryJpa.readAllAuthors();
+            return authorRepositoryJpa.findAll();
+        } catch (Exception e) {
+            throw new ServiceException("Ошибка каталога: " + e.getMessage());
+        }
+
+    }
+
+    @Transactional
+    @Override
+    public List<String> readListAuthors() throws ServiceException {
+        try {
+            return authorRepositoryJpa.readListAuthors();
         } catch (Exception e) {
             throw new ServiceException("Ошибка каталога: " + e.getMessage());
         }

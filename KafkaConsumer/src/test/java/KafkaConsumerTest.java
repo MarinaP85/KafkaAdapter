@@ -100,7 +100,7 @@ public class KafkaConsumerTest {
         msgTest.setBody("");
         msgTest.setHeaders(headers);
         msgTest.setParameters("");
-        msgTest.setUrl("/authors/all");
+        msgTest.setUrl("/authors/list");
 
         //отправляем тестовое сообщение в Кафку
         ListenableFuture<SendResult<String, Object>> msgFuture = template.send("Message1", "msg", msgTest);
@@ -116,7 +116,7 @@ public class KafkaConsumerTest {
         System.out.println(msgResult.getUrl());
 
         //задаем параметры WireMock-запроса
-        stubFor(get(urlEqualTo("/authors/all"))
+        stubFor(get(urlEqualTo("/authors/list"))
                 .withHeader("Content-Language", equalTo("ru, en"))
                 .willReturn(aResponse()
                         .withHeader("Content-Type", "application/json")

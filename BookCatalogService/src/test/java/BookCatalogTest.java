@@ -21,7 +21,7 @@ import java.sql.SQLException;
 import java.util.Arrays;
 import java.util.List;
 
-import static org.hamcrest.Matchers.hasSize;
+import static org.hamcrest.Matchers.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
@@ -66,6 +66,8 @@ public class BookCatalogTest {
 
     @BeforeEach
     public void initBase() throws ServiceException {
+        JdbcTestUtils.deleteFromTables(new JdbcTemplate(dataSource), "BOOK", "AUTHOR");
+
         Author author = new Author("Роберт М. Вегнер");
         Book book1 = new Book("Север-Юг", 380);
         Book book2 = new Book("Восток-Запад", 390);
@@ -102,16 +104,29 @@ public class BookCatalogTest {
         System.out.println(testAuthor);
     }
 
-    @AfterEach
-    public void clearBase() {
-        JdbcTestUtils.deleteFromTables(new JdbcTemplate(dataSource), "BOOK", "AUTHOR");
-    }
+//    @AfterEach
+//    public void clearBase() {
+//        JdbcTestUtils.deleteFromTables(new JdbcTemplate(dataSource), "BOOK", "AUTHOR");
+//    }
 
     @Test
     public void readAllAuthorsTest() {
-        List<String> authors;
+        List<Author> authors;
         try {
             authors = bookCatalogService.readAllAuthors();
+            //System.out.println(authors);
+            Assertions.assertFalse(authors.isEmpty());
+        } catch (ServiceException e) {
+            System.err.println(e.getMessage());
+        }
+
+    }
+
+    @Test
+    public void readListAuthorsTest() {
+        List<String> authors;
+        try {
+            authors = bookCatalogService.readListAuthors();
             System.out.println(authors);
             Assertions.assertTrue(authors.contains("Роберт М. Вегнер"));
         } catch (ServiceException e) {
@@ -202,6 +217,16 @@ public class BookCatalogTest {
                         .header("Content-Language", "ru, en"))
                 .andExpect(status().isOk())
                 //.andExpect(content().contentType(MediaType.))
+                .andExpect(jsonPath("$[*].name",
+                        containsInAnyOrder("Роберт М. Вегнер", "Анджей Сапковский", "Надежда Попова")));
+    }
+
+    @Test
+    public void readListAuthors_AuthorController() throws Exception {
+        mockMvc.perform(
+                get("/authors/list")
+                        .header("Content-Language", "ru, en"))
+                .andExpect(status().isOk())
                 .andExpect(jsonPath("$", hasSize(3)));
     }
 

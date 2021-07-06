@@ -22,11 +22,24 @@ public class AuthorController {
     }
 
     @GetMapping(value = "/authors/all")
-    public ResponseEntity<List<String>> readAllAuthors(@RequestHeader("Content-Language") String language)
+    public ResponseEntity<List<Author>> readAllAuthors(@RequestHeader("Content-Language") String language)
+            throws ServiceException {
+        List<Author> authors = null;
+        if (language.contains("ru")) {
+            authors = bookCatalogService.readAllAuthors();
+        }
+
+        return authors != null && !authors.isEmpty()
+                ? new ResponseEntity<>(authors, HttpStatus.OK)
+                : new ResponseEntity<>(HttpStatus.NOT_FOUND);
+    }
+
+    @GetMapping(value = "/authors/list")
+    public ResponseEntity<List<String>> readListAuthors(@RequestHeader("Content-Language") String language)
             throws ServiceException {
         List<String> authors = null;
         if (language.contains("ru")) {
-            authors = bookCatalogService.readAllAuthors();
+            authors = bookCatalogService.readListAuthors();
         }
 
         return authors != null && !authors.isEmpty()

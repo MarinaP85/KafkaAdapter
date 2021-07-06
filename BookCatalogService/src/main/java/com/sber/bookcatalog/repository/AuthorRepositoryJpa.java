@@ -10,5 +10,5 @@ import java.util.List;
 @Repository
 public interface AuthorRepositoryJpa extends JpaRepository<Author, Long> {
     @Query("select a.name from Author a order by a.name")
-    List<String> readAllAuthors();
+    List<String> readListAuthors();
 }

@@ -7,10 +7,8 @@ import java.util.List;
 
 @Entity
 @NoArgsConstructor
-@Data
 @Getter
 @Setter
-@EqualsAndHashCode
 public class Author {
     @Id
     @GeneratedValue

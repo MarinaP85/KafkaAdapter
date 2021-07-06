@@ -16,11 +16,18 @@ public interface BookCatalogService {
     Author createAuthor(Author author) throws ServiceException;
 
     /**
-     * Возвращает список имен всех авторов
+     * Возвращает список всех авторов
      *
      * @return список авторов
      */
-    List<String> readAllAuthors() throws ServiceException;
+    List<Author> readAllAuthors() throws ServiceException;
+
+    /**
+     * Возвращает список имен всех авторов
+     *
+     * @return список имен авторов
+     */
+    List<String> readListAuthors() throws ServiceException;
 
     /**
      * Возвращает автора по его ID
