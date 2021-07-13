@@ -21,7 +21,7 @@ public class ClientServiceImpl implements ClientService {
                     msgDto.getMethod().toLowerCase(Locale.ROOT), MessageDto.class);
             return (Response) method.invoke(assuredClient, msgDto);
         } catch (Exception e) {
-            throw new ClientException("Ошибка работы клиента");
+            throw new ClientException("Ошибка работы клиента: " + e.getMessage());
         }
     }
 }
